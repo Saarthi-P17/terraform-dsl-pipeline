@@ -11,4 +11,4 @@ resource "aws_vpc" "main_vpc" {
   tags = {
     Name = var.vpc_name
   }
-} / main.tf
+}
