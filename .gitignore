@@ -1,0 +1,50 @@
+# ----------------------------
+# Terraform files to ignore
+# ----------------------------
+.terraform/
+.terraform.lock.hcl
+
+# Terraform state files (VERY IMPORTANT)
+*.tfstate
+*.tfstate.*
+
+# Crash logs
+crash.log
+
+# Sensitive variable files
+*.tfvars
+*.tfvars.json
+
+# Override files
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# CLI config files
+.terraformrc
+terraform.rc
+
+# ----------------------------
+# SSH Keys (CRITICAL)
+# ----------------------------
+*.pem
+*.key
+
+# ----------------------------
+# OS / Editor files
+# ----------------------------
+.DS_Store
+Thumbs.db
+
+# VS Code
+.vscode/
+
+# ----------------------------
+# Logs
+# ----------------------------
+*.log
+
+#-----------
+# pem key
+*.pem
