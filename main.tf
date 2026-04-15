@@ -2,6 +2,14 @@ provider "aws" {
   region = var.aws_region
 }
 
+terraform {
+  backend "s3" {
+    bucket = "otms-dev-state"
+    region = var.aws_region
+    key = "dev/terraform.tfstate"
+  }
+}
+
 resource "aws_vpc" "main_vpc" {
   cidr_block = var.vpc_cidr
 
