@@ -11,22 +11,23 @@ variable "vpc_name" {
 }
 
 # Subnet CIDRs
+// bastion
 variable "public_subnet_cidr" {
-  default = "10.0.0.0/26"
+  default = "10.0.0.0/24"
 }
-
+//frontend
 variable "private_subnet_1_cidr" {
-  default = "10.0.0.64/27"
+  default = "10.0.4.0/23"
 }
-
+// backend
 variable "private_subnet_2_cidr" {
-  default = "10.0.0.96/27"
+  default = "10.0.8.0/22"
 }
-
+// db
 variable "private_subnet_3_cidr" {
-  default = "10.0.0.128/27"
+  default = "10.0.12.0/23"
 }
 
-variable "private_subnet_4_cidr" {
-  default = "10.0.0.160/27"
-}
+//variable "private_subnet_4_cidr" {
+//  default = "10.0.0.160/27"
+//}
