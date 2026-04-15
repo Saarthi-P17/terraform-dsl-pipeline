@@ -54,13 +54,14 @@ data "aws_subnet" "private3" {
     values = ["private-subnet-3"]
   }
 }
-
+/*
 data "aws_subnet" "private4" {
   filter {
     name   = "tag:Name"
     values = ["private-subnet-4"]
   }
 }
+*/
 
 # ---------------- PUBLIC ROUTE TABLE ----------------
 resource "aws_route_table" "public_rt" {
@@ -112,7 +113,9 @@ resource "aws_route_table_association" "private_assoc_3" {
   route_table_id = aws_route_table.private_rt.id
 }
 
+/*
 resource "aws_route_table_association" "private_assoc_4" {
   subnet_id      = data.aws_subnet.private4.id
   route_table_id = aws_route_table.private_rt.id
 }
+*/
