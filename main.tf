@@ -49,7 +49,7 @@ resource "aws_subnet" "private_subnet_3" {
     Name = "private-subnet-3"
   }
 }
-
+/*
 resource "aws_subnet" "private_subnet_4" {
   vpc_id     = data.aws_vpc.existing_vpc.id
   cidr_block = var.private_subnet_4_cidr
@@ -58,3 +58,4 @@ resource "aws_subnet" "private_subnet_4" {
     Name = "private-subnet-4"
   }
 }
+*/
