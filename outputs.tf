@@ -7,6 +7,6 @@ output "private_subnet_ids" {
     aws_subnet.private_subnet_1.id,
     aws_subnet.private_subnet_2.id,
     aws_subnet.private_subnet_3.id,
-    aws_subnet.private_subnet_4.id
+    //aws_subnet.private_subnet_4.id
   ]
 }
