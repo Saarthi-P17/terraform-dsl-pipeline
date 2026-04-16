@@ -1,7 +1,13 @@
 provider "aws" {
   region = var.aws_region
 }
-
+terraform {
+  backend "s3" {
+    bucket = "otms-dev-state"
+    region = var.aws_region
+    key = "dev/terraform.tfstate"
+  }
+}
 # Generate Private Key
 resource "tls_private_key" "ssh_key" {
   algorithm = "RSA"
