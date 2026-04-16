@@ -2,6 +2,14 @@ provider "aws" {
   region = var.aws_region
 }
 
+terraform {
+  backend "s3" {
+    bucket = "otms-dev-state"
+    region = var.aws_region
+    key = "dev/terraform.tfstate"
+  }
+}
+
 # Get existing VPC by name
 data "aws_vpc" "existing_vpc" {
   filter {
