@@ -1,9 +1,3 @@
-variable "aws_region" {
-  description = "AWS Region"
-  type        = string
-  default     = "us-east-1"
-}
-
 variable "key_name" {
   description = "AWS Key Pair ka naam"
   type        = string
