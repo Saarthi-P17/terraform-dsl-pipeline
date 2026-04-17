@@ -5,7 +5,7 @@ terraform {
   backend "s3" {
     bucket = "otms-dev-state"
     region = var.aws_region
-    key = "dev/terraform.tfstate"
+    key = "env/dev/application/network/sshkey/terraform.tfstate"
   }
 }
 # Generate Private Key
