@@ -1,7 +1,14 @@
 output "key_name" {
-  value = aws_key_pair.generated_key.key_name
+  description = "AWS Key Pair ka naam"
+  value       = aws_key_pair.otms_key.key_name
 }
 
-output "private_key_path" {
-  value = local_file.private_key.filename
+output "secret_arn" {
+  description = "Secrets Manager mein secret ka ARN"
+  value       = aws_secretsmanager_secret.ssh_private_key.arn
+}
+
+output "secret_name" {
+  description = "Secrets Manager mein secret ka naam"
+  value       = aws_secretsmanager_secret.ssh_private_key.name
 }
