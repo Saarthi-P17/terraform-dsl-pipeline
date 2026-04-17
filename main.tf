@@ -1,36 +1,36 @@
 provider "aws" {
   region = "us-east-1"
 }
+
 terraform {
   backend "s3" {
+    bucket         = "otms-dev-state"
+    key            = "env/dev/application/network/NAT/terraform.tfstate"
+    region         = "us-east-1"
+    dynamodb_table = "terraform-lock"
+  }
+}
+
+# ✅ GET VPC
+data "terraform_remote_state" "vpc" {
+  backend = "s3"
+  config = {
     bucket = "otms-dev-state"
-    region = "us-east-1"    # ✅ hardcoded
-    key    = "env/dev/application/network/NAT/terraform.tfstate"
+    key    = "env/dev/application/network/vpc/terraform.tfstate"
+    region = "us-east-1"
   }
 }
 
-# Get existing VPC
-data "aws_vpc" "existing_vpc" {
-  filter {
-    name   = "tag:Name"
-    values = [var.vpc_name]
+# ✅ GET SUBNET
+data "terraform_remote_state" "subnet" {
+  backend = "s3"
+  config = {
+    bucket = "otms-dev-state"
+    key    = "env/dev/application/network/subnet/terraform.tfstate"
+    region = "us-east-1"
   }
 }
 
-# Get Public Subnet (where NAT will be placed)
-data "aws_subnet" "public_subnet" {
-  filter {
-    name   = "tag:Name"
-    values = [var.public_subnet_name]
-  }
-
-  filter {
-    name   = "vpc-id"
-    values = [data.aws_vpc.existing_vpc.id]
-  }
-}
-
-# Elastic IP for NAT Gateway
 resource "aws_eip" "nat_eip" {
   domain = "vpc"
 
@@ -39,14 +39,11 @@ resource "aws_eip" "nat_eip" {
   }
 }
 
-# NAT Gateway
 resource "aws_nat_gateway" "nat_gw" {
   allocation_id = aws_eip.nat_eip.id
-  subnet_id     = data.aws_subnet.public_subnet.id
+  subnet_id     = data.terraform_remote_state.subnet.outputs.public_subnet_id
 
   tags = {
     Name = "nat-gateway"
   }
-
-  depends_on = [aws_eip.nat_eip]
 }
