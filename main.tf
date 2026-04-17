@@ -4,9 +4,10 @@ provider "aws" {
 
 terraform {
   backend "s3" {
-    bucket = "otms-dev-state"
-    region = "us-east-1"    # ✅ hardcoded
-    key    = "env/dev/application/network/vpc/terraform.tfstate"
+    bucket         = "otms-dev-state"
+    key            = "env/dev/application/network/vpc/terraform.tfstate"
+    region         = "us-east-1"
+    dynamodb_table = "terraform-lock"
   }
 }
 
