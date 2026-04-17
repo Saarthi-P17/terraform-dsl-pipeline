@@ -1,6 +1,6 @@
 output "key_name" {
   description = "AWS Key Pair ka naam"
-  value       = aws_key_pair.otms_key.key_name
+  value       = aws_key_pair.generated_key.key_name
 }
 
 output "secret_arn" {
