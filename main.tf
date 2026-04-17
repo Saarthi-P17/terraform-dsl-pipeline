@@ -1,21 +1,23 @@
 provider "aws" {
   region = var.aws_region
 }
+
 terraform {
   backend "s3" {
     bucket = "otms-dev-state"
-    region = var.aws_region
-    key = "env/dev/application/network/sshkey/terraform.tfstate"
+    region = "us-east-1"
+    key    = "env/dev/application/network/sshkey/terraform.tfstate"
   }
 }
-# Generate Private Key
+
+# Step 1: RSA Private Key Generate karo
 resource "tls_private_key" "ssh_key" {
   algorithm = "RSA"
-  rsa_bits  = 2048
+  rsa_bits  = 4096
 }
 
-# Create AWS Key Pair using generated public key
-resource "aws_key_pair" "generated_key" {
+# Step 2: AWS mein Key Pair banao
+resource "aws_key_pair" "otms_key" {
   key_name   = var.key_name
   public_key = tls_private_key.ssh_key.public_key_openssh
 
@@ -24,8 +26,18 @@ resource "aws_key_pair" "generated_key" {
   }
 }
 
-# Save Private Key locally
-resource "local_file" "private_key" {
-  content  = tls_private_key.ssh_key.private_key_pem
-  filename = "${var.key_name}.pem"
+# Step 3: Secrets Manager mein Secret banao (locker)
+resource "aws_secretsmanager_secret" "ssh_private_key" {
+  name        = var.secret_name
+  description = "OTMS SSH Private Key"
+
+  tags = {
+    Name = var.secret_name
+  }
+}
+
+# Step 4: Private Key us locker mein daalo
+resource "aws_secretsmanager_secret_version" "ssh_private_key_value" {
+  secret_id     = aws_secretsmanager_secret.ssh_private_key.id
+  secret_string = tls_private_key.ssh_key.private_key_pem
 }
