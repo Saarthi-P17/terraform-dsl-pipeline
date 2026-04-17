@@ -5,7 +5,7 @@ provider "aws" {
 terraform {
   backend "s3" {
     bucket = "otms-dev-state"
-    region = "us-east-1"
+    region = "us-east-1"    # ✅ hardcoded
     key    = "env/dev/application/network/sshkey/terraform.tfstate"
   }
 }
