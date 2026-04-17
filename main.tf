@@ -1,25 +1,30 @@
 provider "aws" {
   region = "us-east-1"
 }
+
 terraform {
   backend "s3" {
-    bucket = "otms-dev-state"
-    region = "us-east-1"    # ✅ hardcoded
-    key    = "env/dev/application/network/subnet/terraform.tfstate"
+    bucket         = "otms-dev-state"
+    key            = "env/dev/application/network/subnet/terraform.tfstate"
+    region         = "us-east-1"
+    dynamodb_table = "terraform-lock"
   }
 }
 
-# Get existing VPC by name
-data "aws_vpc" "existing_vpc" {
-  filter {
-    name   = "tag:Name"
-    values = [var.vpc_name]
+# ✅ GET VPC FROM REMOTE STATE
+data "terraform_remote_state" "vpc" {
+  backend = "s3"
+
+  config = {
+    bucket = "otms-dev-state"
+    key    = "env/dev/application/network/vpc/terraform.tfstate"
+    region = "us-east-1"
   }
 }
 
 # Public Subnet
 resource "aws_subnet" "public_subnet" {
-  vpc_id     = data.aws_vpc.existing_vpc.id
+  vpc_id     = data.terraform_remote_state.vpc.outputs.vpc_id
   cidr_block = var.public_subnet_cidr
 
   map_public_ip_on_launch = true
@@ -31,7 +36,7 @@ resource "aws_subnet" "public_subnet" {
 
 # Private Subnets
 resource "aws_subnet" "private_subnet_1" {
-  vpc_id     = data.aws_vpc.existing_vpc.id
+  vpc_id     = data.terraform_remote_state.vpc.outputs.vpc_id
   cidr_block = var.private_subnet_1_cidr
 
   tags = {
@@ -40,7 +45,7 @@ resource "aws_subnet" "private_subnet_1" {
 }
 
 resource "aws_subnet" "private_subnet_2" {
-  vpc_id     = data.aws_vpc.existing_vpc.id
+  vpc_id     = data.terraform_remote_state.vpc.outputs.vpc_id
   cidr_block = var.private_subnet_2_cidr
 
   tags = {
@@ -49,20 +54,10 @@ resource "aws_subnet" "private_subnet_2" {
 }
 
 resource "aws_subnet" "private_subnet_3" {
-  vpc_id     = data.aws_vpc.existing_vpc.id
+  vpc_id     = data.terraform_remote_state.vpc.outputs.vpc_id
   cidr_block = var.private_subnet_3_cidr
 
   tags = {
     Name = "private-subnet-3"
   }
 }
-/*
-resource "aws_subnet" "private_subnet_4" {
-  vpc_id     = data.aws_vpc.existing_vpc.id
-  cidr_block = var.private_subnet_4_cidr
-
-  tags = {
-    Name = "private-subnet-4"
-  }
-}
-*/
