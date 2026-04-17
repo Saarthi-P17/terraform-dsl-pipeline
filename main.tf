@@ -4,23 +4,26 @@ provider "aws" {
 
 terraform {
   backend "s3" {
+    bucket         = "otms-dev-state"
+    key            = "env/dev/application/network/IGW/terraform.tfstate"
+    region         = "us-east-1"
+    dynamodb_table = "terraform-lock"
+  }
+}
+
+# ✅ GET VPC FROM REMOTE STATE
+data "terraform_remote_state" "vpc" {
+  backend = "s3"
+
+  config = {
     bucket = "otms-dev-state"
-    region = "us-east-1"    # ✅ hardcoded
-    key    = "env/dev/application/network/IGW/terraform.tfstate"
+    key    = "env/dev/application/network/vpc/terraform.tfstate"
+    region = "us-east-1"
   }
 }
 
-# Get existing VPC
-data "aws_vpc" "existing_vpc" {
-  filter {
-    name   = "tag:Name"
-    values = [var.vpc_name]
-  }
-}
-
-# Create Internet Gateway
 resource "aws_internet_gateway" "igw" {
-  vpc_id = data.aws_vpc.existing_vpc.id
+  vpc_id = data.terraform_remote_state.vpc.outputs.vpc_id
 
   tags = {
     Name = "otms-igw"
