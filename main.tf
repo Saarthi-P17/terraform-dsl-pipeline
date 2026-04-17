@@ -1,13 +1,15 @@
 provider "aws" {
   region = var.aws_region
 }
+
 terraform {
   backend "s3" {
     bucket = "otms-dev-state"
-    region = var.aws_region
-    key = "env/dev/application/network/IGW/terraform.tfstate"
+    region = "us-east-1"    # ✅ hardcoded
+    key    = "env/dev/application/network/IGW/terraform.tfstate"
   }
 }
+
 # Get existing VPC
 data "aws_vpc" "existing_vpc" {
   filter {
