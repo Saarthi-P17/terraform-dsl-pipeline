@@ -1,5 +1,5 @@
 variable "key_name" {
-  description = "AWS Key Pair ka naam"
+  description = "SSH Key Pair ka naam"
   type        = string
   default     = "otms-key"
 }
