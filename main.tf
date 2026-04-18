@@ -7,6 +7,7 @@ terraform {
     bucket = "otms-dev-state"
     key    = "env/dev/application/otms/external-alb/terraform.tfstate"
     region = "us-east-1"
+    dynamodb_table = "terraform-lock"
   }
 }
 
