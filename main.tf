@@ -2,6 +2,14 @@ provider "aws" {
   region = var.region
 }
 
+terraform {
+  backend "s3" {
+    bucket = "otms-dev-state"
+    key    = "env/dev/application/otms/external-alb/terraform.tfstate"
+    region = "us-east-1"
+  }
+}
+
 #  Remote State: VPC
 data "terraform_remote_state" "vpc" {
   backend = "s3"
