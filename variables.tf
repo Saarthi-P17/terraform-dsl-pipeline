@@ -7,5 +7,5 @@ variable "key_name" {
 variable "secret_name" {
   description = "Secrets Manager mein secret ka naam"
   type        = string
-  default     = "otms/ssh/private-key"
+  default     = "otms/ssh/secret-key"
 }
