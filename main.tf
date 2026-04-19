@@ -22,10 +22,16 @@ data "terraform_remote_state" "vpc" {
   }
 }
 
+# 🔹 Common AZ (same for all)
+locals {
+  az = "us-east-1a"
+}
+
 # Public Subnet
 resource "aws_subnet" "public_subnet" {
-  vpc_id     = data.terraform_remote_state.vpc.outputs.vpc_id
-  cidr_block = var.public_subnet_cidr
+  vpc_id            = data.terraform_remote_state.vpc.outputs.vpc_id
+  cidr_block        = var.public_subnet_cidr
+  availability_zone = local.az
 
   map_public_ip_on_launch = true
 
@@ -34,28 +40,33 @@ resource "aws_subnet" "public_subnet" {
   }
 }
 
-# Private Subnets
+# Private Subnet 1
 resource "aws_subnet" "private_subnet_1" {
-  vpc_id     = data.terraform_remote_state.vpc.outputs.vpc_id
-  cidr_block = var.private_subnet_1_cidr
+  vpc_id            = data.terraform_remote_state.vpc.outputs.vpc_id
+  cidr_block        = var.private_subnet_1_cidr
+  availability_zone = local.az
 
   tags = {
     Name = "private-subnet-1"
   }
 }
 
+# Private Subnet 2
 resource "aws_subnet" "private_subnet_2" {
-  vpc_id     = data.terraform_remote_state.vpc.outputs.vpc_id
-  cidr_block = var.private_subnet_2_cidr
+  vpc_id            = data.terraform_remote_state.vpc.outputs.vpc_id
+  cidr_block        = var.private_subnet_2_cidr
+  availability_zone = local.az
 
   tags = {
     Name = "private-subnet-2"
   }
 }
 
+# Private Subnet 3
 resource "aws_subnet" "private_subnet_3" {
-  vpc_id     = data.terraform_remote_state.vpc.outputs.vpc_id
-  cidr_block = var.private_subnet_3_cidr
+  vpc_id            = data.terraform_remote_state.vpc.outputs.vpc_id
+  cidr_block        = var.private_subnet_3_cidr
+  availability_zone = local.az
 
   tags = {
     Name = "private-subnet-3"
