@@ -1,8 +1,8 @@
 terraform {
   backend "s3" {
-    bucket = "otms-dev-state"
-    key    = "env/dev/application/otms/frontend-sg/terraform.tfstate"
-    region = "us-east-1"
+    bucket         = "otms-dev-state"
+    key            = "env/dev/application/otms/notification-sg/terraform.tfstate"
+    region         = "us-east-1"
     dynamodb_table = "terraform-lock"
   }
 }
@@ -22,42 +22,64 @@ data "terraform_remote_state" "vpc" {
   }
 }
 
-# 🔹 External ALB SG Remote State
-data "terraform_remote_state" "alb_sg" {
+# 🔹 Frontend SG Remote State (✅ CHANGE HERE)
+data "terraform_remote_state" "frontend_sg" {
   backend = "s3"
 
   config = {
     bucket = "otms-dev-state"
-    key    = "env/dev/application/otms/external-alb/terraform.tfstate"
+    key    = "env/dev/application/otms/frontend-sg/terraform.tfstate"
     region = "us-east-1"
   }
 }
 
-# 🔹 Frontend Security Group
-resource "aws_security_group" "frontend_sg" {
-  name        = "${var.project}-${var.env}-frontend-sg"
-  description = "Frontend Security Group"
+# 🔹 Notification Security Group
+resource "aws_security_group" "notification_sg" {
+  name        = "${var.project}-${var.env}-notification-sg"
+  description = "Notification Security Group"
   vpc_id      = data.terraform_remote_state.vpc.outputs.vpc_id
 
-  # ✅ Rule 1: Allow traffic from External ALB (PORT 3000)
+  # ✅ PORT 8080
   ingress {
-    description              = "Allow from External ALB"
-    from_port                = 3000
-    to_port                  = 3000
+    from_port                = 8080
+    to_port                  = 8080
     protocol                 = "tcp"
-    source_security_group_id = data.terraform_remote_state.alb_sg.outputs.security_group_id
+    source_security_group_id = data.terraform_remote_state.frontend_sg.outputs.frontend_sg_id
   }
 
-  # ✅ Rule 2: SSH access
+  # ✅ PORT 8081
   ingress {
-    description = "SSH Access"
+    from_port                = 8081
+    to_port                  = 8081
+    protocol                 = "tcp"
+    source_security_group_id = data.terraform_remote_state.frontend_sg.outputs.frontend_sg_id
+  }
+
+  # ✅ PORT 8082
+  ingress {
+    from_port                = 8082
+    to_port                  = 8082
+    protocol                 = "tcp"
+    source_security_group_id = data.terraform_remote_state.frontend_sg.outputs.frontend_sg_id
+  }
+
+  # ✅ PORT 5000
+  ingress {
+    from_port                = 5000
+    to_port                  = 5000
+    protocol                 = "tcp"
+    source_security_group_id = data.terraform_remote_state.frontend_sg.outputs.frontend_sg_id
+  }
+
+  # ✅ SSH
+  ingress {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # ✅ Outbound (allow all)
+  # ✅ OUTBOUND
   egress {
     from_port   = 0
     to_port     = 0
@@ -66,7 +88,7 @@ resource "aws_security_group" "frontend_sg" {
   }
 
   tags = {
-    Name        = "${var.project}-${var.env}-frontend-sg"
+    Name        = "${var.project}-${var.env}-notification-sg"
     Environment = var.env
     Project     = var.project
   }
