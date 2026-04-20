@@ -4,7 +4,7 @@ provider "aws" {
 
 terraform {
   backend "s3" {
-    bucket         = "otms-dev-state"
+    bucket         = "otms-dev-state7864582"
     key            = "env/dev/application/network/route-table/terraform.tfstate"
     region         = "us-east-1"
     dynamodb_table = "terraform-lock"
@@ -15,7 +15,7 @@ terraform {
 data "terraform_remote_state" "vpc" {
   backend = "s3"
   config = {
-    bucket = "otms-dev-state"
+    bucket = "otms-dev-state7864582"
     key    = "env/dev/application/network/vpc/terraform.tfstate"
     region = "us-east-1"
   }
@@ -24,7 +24,7 @@ data "terraform_remote_state" "vpc" {
 data "terraform_remote_state" "subnet" {
   backend = "s3"
   config = {
-    bucket = "otms-dev-state"
+    bucket = "otms-dev-state7864582"
     key    = "env/dev/application/network/subnet/terraform.tfstate"
     region = "us-east-1"
   }
@@ -33,7 +33,7 @@ data "terraform_remote_state" "subnet" {
 data "terraform_remote_state" "igw" {
   backend = "s3"
   config = {
-    bucket = "otms-dev-state"
+    bucket = "otms-dev-state7864582"
     key    = "env/dev/application/network/IGW/terraform.tfstate"
     region = "us-east-1"
   }
@@ -42,7 +42,7 @@ data "terraform_remote_state" "igw" {
 data "terraform_remote_state" "nat" {
   backend = "s3"
   config = {
-    bucket = "otms-dev-state"
+    bucket = "otms-dev-state7864582"
     key    = "env/dev/application/network/NAT/terraform.tfstate"
     region = "us-east-1"
   }
