@@ -27,5 +27,6 @@ resource "aws_internet_gateway" "igw" {
 
   tags = {
     Name = "otms-igw"
+    dev = "env"
   }
 }
