@@ -31,6 +31,7 @@ data "terraform_remote_state" "subnet" {
   }
 }
 
+# ✅ Elastic IP
 resource "aws_eip" "nat_eip" {
   domain = "vpc"
 
@@ -39,9 +40,12 @@ resource "aws_eip" "nat_eip" {
   }
 }
 
+# ✅ NAT Gateway (IMPORTANT FIX HERE)
 resource "aws_nat_gateway" "nat_gw" {
   allocation_id = aws_eip.nat_eip.id
-  subnet_id     = data.terraform_remote_state.subnet.outputs.public_subnet_id
+
+  # 👇 Pick first public subnet from list
+  subnet_id = data.terraform_remote_state.subnet.outputs.public_subnet_ids[0]
 
   tags = {
     Name = "nat-gateway"
