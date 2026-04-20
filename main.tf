@@ -65,6 +65,8 @@ resource "aws_route_table" "public_rt" {
 
   tags = {
     Name = "public-rt"
+    dev = "env"
+    visibility = "public"
   }
 }
 
@@ -89,6 +91,8 @@ resource "aws_route_table" "private_rt" {
 
   tags = {
     Name = "private-rt"
+    env = "dev"
+    visibility = "private"
   }
 }
 
