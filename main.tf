@@ -11,7 +11,7 @@ terraform {
   }
 }
 
-# ✅ GET VPC
+# GET VPC
 data "terraform_remote_state" "vpc" {
   backend = "s3"
   config = {
@@ -21,7 +21,7 @@ data "terraform_remote_state" "vpc" {
   }
 }
 
-# ✅ GET SUBNET
+# GET SUBNET
 data "terraform_remote_state" "subnet" {
   backend = "s3"
   config = {
@@ -37,6 +37,8 @@ resource "aws_eip" "nat_eip" {
 
   tags = {
     Name = "nat-eip"
+    env = "dev"
+    
   }
 }
 
@@ -49,5 +51,6 @@ resource "aws_nat_gateway" "nat_gw" {
 
   tags = {
     Name = "nat-gateway"
+    env = "dev"
   }
 }
