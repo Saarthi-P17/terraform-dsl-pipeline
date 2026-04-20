@@ -4,22 +4,35 @@ variable "vpc_name" {
   default     = "OTMS-vpc"
 }
 
-# Subnet CIDRs
-// bastion
+# =========================
+# 🌐 PUBLIC SUBNET CIDRs
+# =========================
+
+# Bastion / Public 1a
 variable "public_subnet_cidr" {
   default = "10.0.0.0/28"
 }
-//frontend
+
+# Public 1b ✅ NEW
+variable "public_subnet_2_cidr" {
+  default = "10.0.0.64/28"
+}
+
+# =========================
+# 🔒 PRIVATE SUBNET CIDRs
+# =========================
+
+# Frontend
 variable "private_subnet_1_cidr" {
   default = "10.0.0.16/28"
 }
-// backend
+
+# Backend
 variable "private_subnet_2_cidr" {
   default = "10.0.0.32/28"
 }
-// db
+
+# DB
 variable "private_subnet_3_cidr" {
   default = "10.0.0.48/28"
 }
-
-
