@@ -11,7 +11,10 @@ terraform {
   }
 }
 
-# ✅ REMOTE STATES
+# =========================
+# REMOTE STATES
+# =========================
+
 data "terraform_remote_state" "vpc" {
   backend = "s3"
   config = {
@@ -48,7 +51,10 @@ data "terraform_remote_state" "nat" {
   }
 }
 
+# =========================
 # PUBLIC ROUTE TABLE
+# =========================
+
 resource "aws_route_table" "public_rt" {
   vpc_id = data.terraform_remote_state.vpc.outputs.vpc_id
 
@@ -62,12 +68,17 @@ resource "aws_route_table" "public_rt" {
   }
 }
 
+# 🔥 FIX: LOOP for public subnets
 resource "aws_route_table_association" "public_assoc" {
-  subnet_id      = data.terraform_remote_state.subnet.outputs.public_subnet_id
+  count          = length(data.terraform_remote_state.subnet.outputs.public_subnet_ids)
+  subnet_id      = data.terraform_remote_state.subnet.outputs.public_subnet_ids[count.index]
   route_table_id = aws_route_table.public_rt.id
 }
 
+# =========================
 # PRIVATE ROUTE TABLE
+# =========================
+
 resource "aws_route_table" "private_rt" {
   vpc_id = data.terraform_remote_state.vpc.outputs.vpc_id
 
@@ -81,17 +92,9 @@ resource "aws_route_table" "private_rt" {
   }
 }
 
-resource "aws_route_table_association" "private_assoc_1" {
-  subnet_id      = data.terraform_remote_state.subnet.outputs.private_subnet_ids[0]
-  route_table_id = aws_route_table.private_rt.id
-}
-
-resource "aws_route_table_association" "private_assoc_2" {
-  subnet_id      = data.terraform_remote_state.subnet.outputs.private_subnet_ids[1]
-  route_table_id = aws_route_table.private_rt.id
-}
-
-resource "aws_route_table_association" "private_assoc_3" {
-  subnet_id      = data.terraform_remote_state.subnet.outputs.private_subnet_ids[2]
+# 🔥 BEST PRACTICE: loop instead of hardcoding 3 subnets
+resource "aws_route_table_association" "private_assoc" {
+  count          = length(data.terraform_remote_state.subnet.outputs.private_subnet_ids)
+  subnet_id      = data.terraform_remote_state.subnet.outputs.private_subnet_ids[count.index]
   route_table_id = aws_route_table.private_rt.id
 }
