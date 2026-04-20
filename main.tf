@@ -11,7 +11,7 @@ terraform {
   }
 }
 
-# ✅ GET VPC FROM REMOTE STATE
+#  GET VPC FROM REMOTE STATE
 data "terraform_remote_state" "vpc" {
   backend = "s3"
 
@@ -41,10 +41,13 @@ resource "aws_subnet" "public_subnet_1a" {
 
   tags = {
     Name = "public-subnet-1a"
+    env = "dev"
+    visibility = "public"
+    az = "1a"
   }
 }
 
-# Public Subnet - 1b ✅ NEW
+# Public Subnet - 1b 
 resource "aws_subnet" "public_subnet_1b" {
   vpc_id                  = data.terraform_remote_state.vpc.outputs.vpc_id
   cidr_block              = var.public_subnet_2_cidr
@@ -52,7 +55,10 @@ resource "aws_subnet" "public_subnet_1b" {
   map_public_ip_on_launch = true
 
   tags = {
-    Name = "public-subnet-1b"
+    Name = "public-subnet-1a"
+    env = "dev"
+    visibility = "public"
+    az = "1b"
   }
 }
 
@@ -68,6 +74,10 @@ resource "aws_subnet" "private_subnet_1" {
 
   tags = {
     Name = "private-subnet-1"
+    env = "dev"
+    visibility = "private"
+    az = "1a"
+    server = "frontend"
   }
 }
 
@@ -79,6 +89,10 @@ resource "aws_subnet" "private_subnet_2" {
 
   tags = {
     Name = "private-subnet-2"
+    env = "dev"
+    visibility = "private"
+    az = "1a"
+    server = "backend"
   }
 }
 
@@ -90,5 +104,9 @@ resource "aws_subnet" "private_subnet_3" {
 
   tags = {
     Name = "private-subnet-3"
+    env = "dev"
+    visibility = "private"
+    az = "1a"
+    server = "db"
   }
 }
