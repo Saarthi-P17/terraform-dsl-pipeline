@@ -1,11 +1,9 @@
-variable "key_name" {
-  description = "SSH Key Pair ka naam"
-  type        = string
-  default     = "otms-key"
+variable "aws_region" {
+  description = "AWS Region"
+  default     = "us-east-1"
 }
 
-variable "secret_name" {
-  description = "Secrets Manager mein secret ka naam"
-  type        = string
-  default     = "otms/ssh/secret-key1"
+variable "key_name" {
+  description = "Name of the SSH key pair"
+  default     = "my-terraform-key"
 }
