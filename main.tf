@@ -22,51 +22,71 @@ data "terraform_remote_state" "vpc" {
   }
 }
 
-# 🔹 Common AZ (same for all)
+# 🔹 AZs
 locals {
-  az = "us-east-1a"
+  az_a = "us-east-1a"
+  az_b = "us-east-1b"
 }
 
-# Public Subnet
-resource "aws_subnet" "public_subnet" {
-  vpc_id            = data.terraform_remote_state.vpc.outputs.vpc_id
-  cidr_block        = var.public_subnet_cidr
-  availability_zone = local.az
+# =========================
+# 🌐 PUBLIC SUBNETS
+# =========================
 
+# Public Subnet - 1a
+resource "aws_subnet" "public_subnet_1a" {
+  vpc_id                  = data.terraform_remote_state.vpc.outputs.vpc_id
+  cidr_block              = var.public_subnet_cidr
+  availability_zone       = local.az_a
   map_public_ip_on_launch = true
 
   tags = {
-    Name = "public-subnet"
+    Name = "public-subnet-1a"
   }
 }
 
-# Private Subnet 1
+# Public Subnet - 1b ✅ NEW
+resource "aws_subnet" "public_subnet_1b" {
+  vpc_id                  = data.terraform_remote_state.vpc.outputs.vpc_id
+  cidr_block              = var.public_subnet_2_cidr
+  availability_zone       = local.az_b
+  map_public_ip_on_launch = true
+
+  tags = {
+    Name = "public-subnet-1b"
+  }
+}
+
+# =========================
+# 🔒 PRIVATE SUBNETS
+# =========================
+
+# Private Subnet 1 (Frontend)
 resource "aws_subnet" "private_subnet_1" {
   vpc_id            = data.terraform_remote_state.vpc.outputs.vpc_id
   cidr_block        = var.private_subnet_1_cidr
-  availability_zone = local.az
+  availability_zone = local.az_a
 
   tags = {
     Name = "private-subnet-1"
   }
 }
 
-# Private Subnet 2
+# Private Subnet 2 (Backend)
 resource "aws_subnet" "private_subnet_2" {
   vpc_id            = data.terraform_remote_state.vpc.outputs.vpc_id
   cidr_block        = var.private_subnet_2_cidr
-  availability_zone = local.az
+  availability_zone = local.az_a
 
   tags = {
     Name = "private-subnet-2"
   }
 }
 
-# Private Subnet 3
+# Private Subnet 3 (DB)
 resource "aws_subnet" "private_subnet_3" {
   vpc_id            = data.terraform_remote_state.vpc.outputs.vpc_id
   cidr_block        = var.private_subnet_3_cidr
-  availability_zone = local.az
+  availability_zone = local.az_a
 
   tags = {
     Name = "private-subnet-3"
