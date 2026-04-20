@@ -30,7 +30,7 @@ data "terraform_remote_state" "vpc" {
 # ---------------------------
 # 🔗 Remote State (Subnets)
 # ---------------------------
-/*
+
 data "terraform_remote_state" "subnets" {
   backend = "s3"
 
@@ -39,14 +39,6 @@ data "terraform_remote_state" "subnets" {
     key    = "env/dev/application/network/subnet/terraform.tfstate"
     region = "us-east-1"
   }
-}
-*/
-data "aws_subnets" "api_subnets" {
-  filter {
-    name   = "tag:Name"
-    values = ["private-subnet-2"]
-  }
-  
 }
 
 # ---------------------------
@@ -87,7 +79,7 @@ resource "aws_instance" "backend_instance" {
   instance_type = var.instance_type
 
   #  Using private-subnet-2 from remote state
-  subnet_id = data.aws_subnets.api_subnets.ids[0]
+  subnet_id = data.terraform_remote_state.subnets.outputs.private_subnet_ids[1]
   vpc_security_group_ids = [
     aws_security_group.ec2_sg.id
   ]
