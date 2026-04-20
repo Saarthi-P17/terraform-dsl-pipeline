@@ -30,3 +30,7 @@ output "instance_id" {
   value       = aws_instance.my_ec2.id
 }
 */
+output "primary_network_interface_id" {
+  description = "Primary ENI of backend EC2"
+  value       = aws_instance.backend_instance.primary_network_interface_id
+}
