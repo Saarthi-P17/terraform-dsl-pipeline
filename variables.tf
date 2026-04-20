@@ -1,3 +1,4 @@
+
 variable "env" {
   default = "dev"
 }
@@ -11,7 +12,8 @@ variable "region" {
 }
 
 variable "ami_id" {
-  default = "ami-0b73ce37f347c345b"
+  // ami-033bd18826652770f
+  default = "ami-033bd18826652770f"
 }
 
 variable "instance_type" {

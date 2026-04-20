@@ -1,52 +1,106 @@
+# ---------------------------
+# Provider & Backend
+# ---------------------------
+provider "aws" {
+  region = "us-east-1"
+}
+
 terraform {
   backend "s3" {
-    bucket         = "otms-dev-state"
-    key            = "env/dev/application/otms/ec2-instance/terraform.tfstate"
+    bucket         = "otms-dev-state7864582"
+    key            = "env/dev/backend/instances/terraform.tfstate"
     region         = "us-east-1"
     dynamodb_table = "terraform-lock"
   }
 }
 
-provider "aws" {
-  region = "us-east-1"
-}
-
-# 🔹 Subnet (must be us-east-1a)
-data "terraform_remote_state" "subnet" {
+# ---------------------------
+# 🔗 Remote State (VPC)
+# ---------------------------
+data "terraform_remote_state" "vpc" {
   backend = "s3"
 
   config = {
-    bucket = "otms-dev-state"
+    bucket = "otms-dev-state7864582"
+    key    = "env/dev/application/network/vpc/terraform.tfstate"
+    region = "us-east-1"
+  }
+}
+
+# ---------------------------
+# 🔗 Remote State (Subnets)
+# ---------------------------
+/*
+data "terraform_remote_state" "subnets" {
+  backend = "s3"
+
+  config = {
+    bucket = "otms-dev-state7864582"
     key    = "env/dev/application/network/subnet/terraform.tfstate"
     region = "us-east-1"
   }
 }
+*/
+data "aws_subnets" "api_subnets" {
+  filter {
+    name   = "tag:Name"
+    values = ["private-subnet-2"]
+  }
+  
+}
+# ---------------------------
+# Key Pair
+# ---------------------------
+data "aws_key_pair" "selected" {
+  key_name = "my-terraform-key"
+}
 
-# 🔹 Security Group
-data "terraform_remote_state" "alb_sg" {
-  backend = "s3"
 
-  config = {
-    bucket = "otms-dev-state"
-    key    = "env/dev/application/otms/external-alb/terraform.tfstate"
-    region = "us-east-1"
+
+# ---------------------------
+# Security Group
+# ---------------------------
+resource "aws_security_group" "ec2_sg" {
+  name   = "ec2-sg"
+  vpc_id = data.terraform_remote_state.vpc.outputs.vpc_id
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] # ⚠️ restrict in prod
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
-resource "aws_instance" "frontend_instance" {
-  ami           = "ami-0b73ce37f347c345b"
-  instance_type = "t3.small"
+# ---------------------------
+# EC2 Instance
+# ---------------------------
+resource "aws_instance" "backend_instance" {
+  ami           = var.ami_id
+  instance_type = var.instance_type
 
-  # 🔥 THIS decides AZ
-  subnet_id = data.terraform_remote_state.subnet.outputs.private_subnet_1_id
-
+  #  Using private-subnet-2 from remote state
+  subnet_id = data.aws_subnets.api_subnets.ids[0]
   vpc_security_group_ids = [
-    data.terraform_remote_state.alb_sg.outputs.security_group_id
+    aws_security_group.ec2_sg.id
   ]
 
-  associate_public_ip_address = false
+  key_name = data.aws_key_pair.selected.key_name
 
   tags = {
-    Name = "frontend-us-east-1a"
+    Name = "MyTerraformEC2"
+    env = var.env
+    project = var.project
   }
 }
+
+
+
+
+
